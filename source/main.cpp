@@ -1,10 +1,10 @@
 #include "formulae_resolver.h"
-#include "MVQMC.h"
+#include "implicant_enumerator.h"
 
 const string PROGRAM_NAME = "PrimeImplicantEnumerator";
 
-vector<int> valuationToVals(const size_t valuation_id, map<string, bool> & valuation) {
-	vector<int> result(valuation.size(), 0);
+Minterm valuationToVals(const size_t valuation_id, map<string, bool> & valuation) {
+	Minterm result(valuation.size(), 0);
 	int ele = 0;
 	for (map<string, bool>::iterator it = begin(valuation); it != end(valuation); it++, ele++) {
 		bool val = (valuation_id >> ele) % 2;
@@ -14,20 +14,19 @@ vector<int> valuationToVals(const size_t valuation_id, map<string, bool> & valua
 	return result;
 }
 
-Json::Value PDNFToJSON(const PDNF & pdnf, const vector<string> & regulators) {
+Json::Value DNFToJSON(const DNF & dnf, const vector<string> & regulators) {
 	Json::Value result;
 	result.resize(0);
 
-	for (PDNF::const_iterator it = begin(pdnf); it != end(pdnf); it++) {
+	for (DNF::const_iterator it = begin(dnf); it != end(dnf); it++) {
 		Json::Value implicant(Json::objectValue);
 
 		for (size_t i = 0; i < regulators.size(); i++) {
 			// If there are not both the values
-			if ((*it)[i].size() != 2) {
-				implicant[regulators[i]] = (*it)[i].front();
+			if ((*it)[i] != -1) {
+				implicant[regulators[i]] = (*it)[i];
 			}
 		}
-
 		result.append(implicant);
 	}
 
@@ -73,11 +72,11 @@ int main(int argc, char ** argv) {
 				valuation.insert(make_pair(*it, false));
 			} cout << endl;
 
-			vector<vector<int> > true_elems;
-			vector<vector<int> > false_elems;
+			DNF true_elems;
+			DNF false_elems;
 			const size_t VALUATIONS_COUNT = pow(2, regulators.size());
 			for (size_t valuation_id = 0; valuation_id < VALUATIONS_COUNT; valuation_id++) {
-				vector<int> new_elem = valuationToVals(valuation_id, valuation);
+				Minterm new_elem = valuationToVals(valuation_id, valuation);
 				if (FormulaeResolver::resolve(valuation, formula)) {
 					true_elems.push_back(new_elem);
 				}
@@ -86,10 +85,11 @@ int main(int argc, char ** argv) {
 				}
 				cout << "\rResolving: " << valuation_id + 1 << "/" << VALUATIONS_COUNT;
 			}
-
+			sort(WHOLE(true_elems));
+			sort(WHOLE(false_elems));
 			Json::Value JsonLine;
-			JsonLine["0"] = PDNFToJSON(MVQMC::compactize(MVQMC::elementsToPDNF(false_elems)), regulators);
-			JsonLine["1"] = PDNFToJSON(MVQMC::compactize(MVQMC::elementsToPDNF(true_elems)), regulators);
+			JsonLine["0"] = DNFToJSON(ImplicantEnumerator::compactize(regulators.size(), false_elems), regulators);
+			JsonLine["1"] = DNFToJSON(ImplicantEnumerator::compactize(regulators.size(), true_elems), regulators);
 			JsonResult[component] = JsonLine;
 		}
 
