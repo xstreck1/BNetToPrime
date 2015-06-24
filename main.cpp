@@ -56,9 +56,12 @@ int main(int argc, char ** argv) {
 		// Holds the input
 		map<string, pair<vector<string>, string> > line_data;
 		string line;
-		getline(fin, line); // Ignore the first line
 		// Read computed and write line by line
 		while (getline(fin, line)) {
+			// Skip the first line, if it is "targets,factors"
+			if (FormulaeResolver::removeWhitespaces(line) == "targets,factors") {
+				continue;
+			}
 			// Parse the line
 			size_t comma_pos = line.find(',');
 			string component = line.substr(0, comma_pos);

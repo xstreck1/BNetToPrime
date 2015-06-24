@@ -21,15 +21,13 @@ BNetToPrime [--help][--ver][input [output]]
 ```
 
 ### Input file
-The first line of the input file is expected to be: 
-```
-targets, factors
-```
-Following lines are of the form:
+Each line input file is expected to be of the form: 
 ```
 target, function
 ```
 where "target" is a name of a component and "function" is a boolean function over components with "&" for conjunction, "|" for disjunction, "!" for negation.
+
+Note, if the line is "targets, factors" (as a result of printing it from BoolNet) then it is ignored.
 
 ### Output file
 Output is a json object that holds for each component an array with two elements. 
