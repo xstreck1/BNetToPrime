@@ -1,5 +1,9 @@
 #pragma once
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief	Functions that help with input / output.
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #include "header.h"
 
 class IO {
@@ -8,21 +12,21 @@ public:
 		fout << "[";
 		for (DNF::const_iterator it = dnf.begin(); it != dnf.end(); it++) {
 			fout << "{";
-			bool has_elem = false;
-			for (size_t i = 0; i < regulators.size(); i++) {
-				// If there are not both the values
-				if ((*it)[i] != -1) {
-					// Write the number (ASCII position 48 for 0, 49 for 1)
-					fout << "\"" << regulators[i] << "\":" << (*it)[i] + 0 << ",";
-					has_elem = true;
+			if (count(it->begin(), it->end(), -1) != it->size()) {
+				for (size_t i = 0; i < regulators.size(); i++) {
+					// If there are not both the values
+					if ((*it)[i] != -1) {
+						// Write the number (ASCII position 48 for 0, 49 for 1)
+						fout << "\"" << regulators[i] << "\":" << (*it)[i] + 0 << ",";
+					}
 				}
-			}
-			if (has_elem) {
 				fout.seekp(fout.tellp() - static_cast<streampos>(1));
 			}
 			fout << "},";
 		}
-		fout.seekp(fout.tellp() - static_cast<streampos>(1)); // Remove the last comma
+		if (dnf.size() != 0) {
+			fout.seekp(fout.tellp() - static_cast<streampos>(1)); // Remove the last comma
+		}
 		fout << "]";
 	}
 

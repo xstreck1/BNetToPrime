@@ -135,6 +135,7 @@ public:
 		return result;
 	}
 
+	// @brief just for exsting
 	static void test() {
 		map<string, bool> vals;
 		vals.insert(make_pair("A", true));
