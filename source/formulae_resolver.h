@@ -13,7 +13,7 @@
 ///
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include "network_parser.h"
+#include "io.h"
 
 #define MY_TEST(expr, vals, res) if(FormulaeResolver::resolve(vals, expr)!=res){throw runtime_error(string(expr) + " does not yield the expected value\n");};
 
@@ -28,7 +28,7 @@ public:
 		int parity_count = 0;
 		char current_op = '*';
 		vector<string> subexpressions;
-		for (int i = 0; i < formula.size(); i++) {
+		for (int i = 0; i <  static_cast<int>(formula.size()); i++) {
 			if (formula[i] == ')') {
 				parity_count--;
 			}
@@ -40,11 +40,11 @@ public:
 			}
 			else if (parity_count == 0) {
 				if (start_pos == -1) {
-					if (NetworkParser::belongsToName(formula[i]) || formula[i] == '!') {
+					if (IO::belongsToName(formula[i]) || formula[i] == '!') {
 						start_pos = i;
 					}
 				}
-				else if (!(NetworkParser::belongsToName(formula[i]) || formula[i] == '!')) {
+				else if (!(IO::belongsToName(formula[i]) || formula[i] == '!')) {
 					subexpressions.push_back(formula.substr(start_pos, i - start_pos));
 					start_pos = -1;
 					if (formula[i] != current_op && current_op != '*') {
@@ -90,7 +90,7 @@ public:
 		}
 		else if (current_op == '|') {
 			bool result = false;
-			for (vector<string>::iterator it = begin(subexpressions); it != end(subexpressions); it++) {
+			for (vector<string>::iterator it = subexpressions.begin(); it != subexpressions.end(); it++) {
 				if (it->front() == '!') {
 					result |= !resolve(valuation, it->substr(1));
 				}
@@ -102,7 +102,7 @@ public:
 		}
 		else if (current_op == '&') {
 			bool result = true;
-			for (vector<string>::iterator it = begin(subexpressions); it != end(subexpressions); it++) {
+			for (vector<string>::iterator it = subexpressions.begin(); it != subexpressions.end(); it++) {
 				if (it->front() == '!') {
 					result &= !resolve(valuation, it->substr(1));
 				}
@@ -127,7 +127,7 @@ public:
 	// @return new string made from the source by removing whitespaces
 	static string removeWhitespaces(const string & source) {
 		string result;
-		for (int i = 0; i < source.size(); i++) {
+		for (int i = 0; i <  static_cast<int>(source.size()); i++) {
 			if (!isspace(source.at(i))) {
 				result += source.at(i);
 			}
