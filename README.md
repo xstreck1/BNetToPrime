@@ -8,7 +8,9 @@ Extra easy to compile:
 cd BNetToPrime
 "compiler" main.cpp
 ```
-where "compiler" is either g++ on Unix/Linux, clang on MacOS, or cl on Windows.
+where "compiler" is either g++ on Unix/Linux, clang++ on MacOS, or cl on Windows.
+
+A binary file gets produced based on the platform (e.g. a.out on Unix/Linux).
 
 The code is C++98 compliant.
 ### Running

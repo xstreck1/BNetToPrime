@@ -37,6 +37,10 @@ int main(int argc, char ** argv) {
 				IO::printHelp();
 				return 0;
 			}
+			if (input_filename == "--ver" || input_filename == "-v") {
+				IO::printVersion();
+				return 0;
+			}
 			if (argc > 2) {
 				output_filename = argv[2];
 			}

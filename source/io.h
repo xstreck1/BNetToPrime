@@ -31,7 +31,15 @@ public:
 	}
 
 	static void printHelp() {
+		cout << "BNetToPrime[--help][--ver][input[output]]" << endl
+			<< "\t--help displays help" << endl
+			<< "\t--ver  displays version" << endl
+			<< "\tinput  the path to the input file, if missing, 'input.bnet' is used" << endl
+			<< "\toutput the path to the output file, if missing, 'output.json' is used" << endl;
+	}
 
+	static void printVersion() {
+		cout << PROGRAM_NAME << " " << VERSION << endl;
 	}
 
 	// @return	true iff ch is possibly part of a valid name

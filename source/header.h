@@ -12,7 +12,8 @@
 
 using namespace std;
 
-const string PROGRAM_NAME = "PrimeImplicantEnumerator";
+const string PROGRAM_NAME = "BNetToPrime";
+const string VERSION = "1.0";
 
 // Logic types
 typedef char Value; ///< Three values - 0 for false, 1 for true, -1 for don't care
