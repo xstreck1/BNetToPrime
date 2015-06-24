@@ -41,11 +41,11 @@ int main(int argc, char ** argv) {
 		}
 
 		// Open the input and output files
-		fstream fin(input_filename, ios::in);
+        fstream fin(input_filename.c_str(), fstream::in);
 		if (!fin) {
 			throw invalid_argument(string("Failed to open the input file ") + input_filename);
 		}
-		fstream fout(output_filename, ios::out);
+        fstream fout(output_filename.c_str(), fstream::out);
 		if (!fout) {
 			throw invalid_argument(string("Failed to open the output file ") + output_filename);
 		}
@@ -68,7 +68,7 @@ int main(int argc, char ** argv) {
 
 		// Check if all components are present, if not, add self-regulation
 		for (map<string, pair<vector<string>, string> >::iterator it = line_data.begin(); it != line_data.end(); it++) {
-			for (vector<string>::const_iterator comp_it = it->second.first.cbegin(); comp_it != it->second.first.cend(); comp_it++) {
+            for (vector<string>::const_iterator comp_it = it->second.first.begin(); comp_it != it->second.first.end(); comp_it++) {
 				if (line_data.count(*comp_it) == 0) {
 					vector<string> regulators;
 					regulators.push_back(*comp_it);
@@ -78,7 +78,7 @@ int main(int argc, char ** argv) {
 		}
 
 		// Compute and output data for each line
-		for (map<string, pair<vector<string>, string> >::const_iterator it = line_data.cbegin(); it != line_data.cend(); it++) {
+        for (map<string, pair<vector<string>, string> >::const_iterator it = line_data.begin(); it != line_data.end(); it++) {
 			const string component = it->first;
 			const vector<string> regulators = it->second.first;
 			const string formula = it->second.second;
@@ -91,7 +91,7 @@ int main(int argc, char ** argv) {
 			// Create the valuation map, also write the current line on the output 
 			map<string, bool> valuation;
 			cout << "\rTarget: '" << component << "'. Regulators: [";
-			for (vector<string>::const_iterator it = regulators.cbegin(); it != regulators.cend(); it++) {
+            for (vector<string>::const_iterator it = regulators.begin(); it != regulators.end(); it++) {
 				cout << *it << ",";
 				valuation.insert(make_pair(*it, false));
 			} 

@@ -51,19 +51,21 @@ class ImplicantEnumerator {
 		// Distribute the source values into an array indexed as [position of don't cares][number of ones]
 		vector<vector<DNF> >  distribution(static_cast<int>(pow(2,var_count)), vector<DNF>(var_count - depth +1));
 		cout << "\r\t\tMerge level: " << depth + 1 << ". Analyzing " << to_merge.size() << " minterms" << endl;
-		for (DNF::const_iterator it = to_merge.cbegin(); it != to_merge.cend(); it++) {
-			cout << "\rPreprocessing: " << distance(to_merge.cbegin(), it) << "/" << to_merge.size();
+        DNF::const_iterator to_merge_begin = to_merge.begin();
+        for (DNF::const_iterator it = to_merge_begin; it != to_merge.end(); it++) {
+            cout << "\rPreprocessing: " << distance(to_merge_begin, it) << "/" << to_merge.size();
 			distribution[countDontCares(*it)][countOnes(*it)].push_back(*it);
 		}
 
 		DNF used; // Which elements have been used for a merde
 		DNF merged; // New, merged elements
-		for (vector<vector<DNF> >::const_iterator dc_level_it = distribution.cbegin(); dc_level_it < distribution.cend(); dc_level_it++) {
-			for (vector<DNF>::const_iterator one_level_it = dc_level_it->cbegin(); one_level_it + 1 < dc_level_it->cend(); one_level_it++) {
-				cout << "\rMerging: " << distance(distribution.cbegin(), dc_level_it) << "/" << distribution.size();
+        vector<vector<DNF> >::const_iterator distribution_begin = distribution.begin();
+        for (vector<vector<DNF> >::const_iterator dc_level_it = distribution.begin(); dc_level_it < distribution.end(); dc_level_it++) {
+            for (vector<DNF>::const_iterator one_level_it = dc_level_it->begin(); one_level_it + 1 < dc_level_it->end(); one_level_it++) {
+                cout << "\rMerging: " << distance(distribution_begin, dc_level_it) << "/" << distribution.size();
 				vector<DNF>::const_iterator one_upper_level_it = one_level_it + 1;
-				for (DNF::const_iterator lower_minterm_it = one_level_it->cbegin(); lower_minterm_it < one_level_it->cend(); lower_minterm_it++) {
-					for (DNF::const_iterator upper_minterm_it = one_upper_level_it->cbegin(); upper_minterm_it < one_upper_level_it->cend(); upper_minterm_it++) {
+                for (DNF::const_iterator lower_minterm_it = one_level_it->begin(); lower_minterm_it < one_level_it->end(); lower_minterm_it++) {
+                    for (DNF::const_iterator upper_minterm_it = one_upper_level_it->begin(); upper_minterm_it < one_upper_level_it->end(); upper_minterm_it++) {
 						int can_merge = canMerge(*lower_minterm_it, *upper_minterm_it);
 						if (can_merge != -1) {
 							merged.push_back(*lower_minterm_it);

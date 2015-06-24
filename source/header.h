@@ -1,11 +1,13 @@
 #pragma once
 #include <algorithm>
+#include <cmath>
 #include <fstream>
 #include <functional>
 #include <iostream>
 #include <iterator>
 #include <map>
 #include <string>
+#include <stdexcept>
 #include <vector>
 
 using namespace std;
