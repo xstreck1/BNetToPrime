@@ -5,6 +5,8 @@
 #include "source/formulae_resolver.h"
 #include "source/implicant_enumerator.h"
 
+// #define RUN_TESTS
+
 // @brief	The number of the regulators is bounded by the nubmer of bits in the size_t 
 size_t maxRegulatorsCount() {
 	return sizeof(size_t) * 8;
@@ -28,8 +30,9 @@ int main(int argc, char ** argv) {
 #ifdef _MSC_VER //Set the output buffer size for visual studio
 		setvbuf(stdout, 0, _IOLBF, 4096);
 #endif
+#ifdef RUN_TESTS
 		FormulaeResolver::test();
-
+#else
 		// Parse the input
 		string input_filename = "input.bnet";
 		string output_filename = "output.json";
@@ -141,6 +144,7 @@ int main(int argc, char ** argv) {
             fout.seekp(fout.tellp() - static_cast<streampos>(1)); // Remove the last comma
         }
 		fout << "}";
+#endif
 	}
 	catch (exception & e) {
 		cerr << PROGRAM_NAME << " encountered an exception and aborted." << endl;

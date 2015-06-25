@@ -15,7 +15,7 @@
 
 #include "io.h"
 
-#define MY_TEST(expr, vals, res) if(FormulaeResolver::resolve(vals, expr)!=res){throw runtime_error(string(expr) + " does not yield the expected value\n");};
+#define MY_TEST(expr, vals) if(!FormulaeResolver::resolve(vals, expr)){throw runtime_error(string(expr) + " does not yield the expected value\n");};
 
 class FormulaeResolver {
 public:
@@ -143,13 +143,14 @@ public:
 		map<string, bool> vals;
 		vals.insert(make_pair("A", true));
 		vals.insert(make_pair("B", false));
-		MY_TEST("A",vals,true);
-		MY_TEST("A|B", vals, true);
-		MY_TEST("!(A&B)", vals, true);
-		MY_TEST("(!B&A)", vals, true);
-		MY_TEST("(A&B&B&A)|A|B", vals, true);
-		MY_TEST(removeWhitespaces("!(\n(A&B ) \t | (B&A)|!(A|B))"), vals, true);
-		MY_TEST("A|B&B", vals, true); // operator precedence
-		MY_TEST("!((A|B)&B)", vals, true); // operator precedence
+		MY_TEST("A",vals);
+		MY_TEST("A|B", vals);
+		MY_TEST("!(A&B)", vals);
+		MY_TEST("(!B&A)", vals);
+		MY_TEST("(A&B&B&A)|A|B", vals);
+		MY_TEST(removeWhitespaces("!(\n(A&B ) \t | (B&A)|!(A|B))"), vals);
+		MY_TEST("A|B&B", vals); // operator precedence
+		MY_TEST("!((A|B)&B)", vals); // operator precedence - cont'd
+		MY_TEST("!(!B&!A|A&B)", vals); // the negation error
 	}
 };
