@@ -22,13 +22,10 @@ public:
 	typedef map<string, bool> Vals; ///< Valuation of atomic propositions
 	typedef pair<string, bool> Val; ///< A single proposition valuation
 
-	// @return	true iff the formula is true under the valuation (where the valuation are pairs (variable,value)) 
-	static bool resolve(const Vals & valuation, string formula) {
+	static vector<string> singleParse(const string & formula, const char op, int & parity_count) {
 		int start_pos = -1;
-		int parity_count = 0;
-		char current_op = '*';
 		vector<string> subexpressions;
-		for (int i = 0; i <  static_cast<int>(formula.size()); i++) {
+		for (int i = 0; i < static_cast<int>(formula.size()); i++) {
 			if (formula[i] == ')') {
 				parity_count--;
 			}
@@ -45,13 +42,12 @@ public:
 					}
 				}
 				else if (!(IO::belongsToName(formula[i]) || formula[i] == '!')) {
-					subexpressions.push_back(formula.substr(start_pos, i - start_pos));
-					start_pos = -1;
-					if (formula[i] != current_op && current_op != '*') {
-						throw runtime_error(string("Mismatched or uknown operator '") + formula[i] + "' in the (sub)expression '" + formula + "'.");
+					if (op == formula[i]) {
+						subexpressions.push_back(formula.substr(start_pos, i - start_pos));
+						start_pos = -1;
 					}
-					else {
-						current_op = formula[i];
+					else if (formula[i] != '&' && formula[i] != '|') {
+						throw runtime_error(string("Unknown operator '") + formula[i] + "' in the (sub)expression '" + formula + "'.");
 					}
 				}
 			}
@@ -59,10 +55,27 @@ public:
 		if (start_pos != -1) {
 			subexpressions.push_back(formula.substr(start_pos, formula.size() - start_pos));
 		}
+		return subexpressions;
+	}
+
+	// @return	true iff the formula is true under the valuation (where the valuation are pairs (variable,value)) 
+	static bool resolve(const Vals & valuation, string formula) {
+		char current_op = '|';
+		int parity_count = 0;
+		vector<string> subexpressions = singleParse(formula, current_op, parity_count);
+		if (subexpressions.size() == 0) {
+			throw runtime_error(string("The subexpression ") + formula + " is not a valid formula.");
+		}
+		// No | on the top level
+		else if (subexpressions.size() == 1) {
+			current_op = '&';
+			subexpressions = singleParse(formula, current_op, parity_count);
+		}
 		if (parity_count != 0) {
 			throw runtime_error(string("Wrong parenthesis parity in the (sub)expression '") + formula + "'.");
 		}
-		if (current_op == '*') {
+		// No & on the top level
+		if (subexpressions.size() == 1) {
 			bool negate = false;
 			bool result = false;
 			if (formula[0] == '!') {
@@ -146,5 +159,7 @@ public:
 		MY_TEST("(!B&A)", vals, true);
 		MY_TEST("(A&B&B&A)|A|B", vals, true);
 		MY_TEST(removeWhitespaces("!(\n(A&B ) \t | (B&A)|!(A|B))"), vals, true);
+		MY_TEST("A|B&B", vals, true); // operator precedence
+		MY_TEST("!((A|B)&B)", vals, true); // operator precedence
 	}
 };

@@ -28,6 +28,8 @@ int main(int argc, char ** argv) {
 #ifdef _MSC_VER //Set the output buffer size for visual studio
 		setvbuf(stdout, 0, _IOLBF, 4096);
 #endif
+		FormulaeResolver::test();
+
 		// Parse the input
 		string input_filename = "input.bnet";
 		string output_filename = "output.json";
