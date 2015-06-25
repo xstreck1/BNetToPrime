@@ -62,8 +62,9 @@ int main(int argc, char ** argv) {
 		string line;
 		// Read computed and write line by line
 		while (getline(fin, line)) {
+            line = FormulaeResolver::removeWhitespaces(line) ;
 			// Skip the first line, if it is "targets,factors"
-			if (FormulaeResolver::removeWhitespaces(line) == "targets,factors") {
+            if (line.empty() || line == "targets,factors" ) {
 				continue;
 			}
 			// Parse the line
@@ -134,7 +135,9 @@ int main(int argc, char ** argv) {
 			fout << "],";
 		}
 
-		fout.seekp(fout.tellp() - static_cast<streampos>(1)); // Remove the last comma
+        if (!line_data.empty()) {
+            fout.seekp(fout.tellp() - static_cast<streampos>(1)); // Remove the last comma
+        }
 		fout << "}";
 	}
 	catch (exception & e) {
