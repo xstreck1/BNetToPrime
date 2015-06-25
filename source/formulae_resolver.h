@@ -104,24 +104,14 @@ public:
 		else if (current_op == '|') {
 			bool result = false;
 			for (vector<string>::iterator it = subexpressions.begin(); it != subexpressions.end(); it++) {
-                if (it->at(0) == '!') {
-					result |= !resolve(valuation, it->substr(1));
-				}
-				else {
-					result |= resolve(valuation, *it);
-				}
+				result |= resolve(valuation, *it);
 			}
 			return result;
 		}
 		else if (current_op == '&') {
 			bool result = true;
 			for (vector<string>::iterator it = subexpressions.begin(); it != subexpressions.end(); it++) {
-                if (it->at(0) == '!') {
-					result &= !resolve(valuation, it->substr(1));
-				}
-				else {
-					result &= resolve(valuation, *it);
-				}
+				result &= resolve(valuation, *it);
 			}
 			return result;
 		}
