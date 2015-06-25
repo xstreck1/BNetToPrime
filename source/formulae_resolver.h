@@ -22,8 +22,9 @@ public:
 	typedef map<string, bool> Vals; ///< Valuation of atomic propositions
 	typedef pair<string, bool> Val; ///< A single proposition valuation
 
-	static vector<string> singleParse(const string & formula, const char op, int & parity_count) {
+	static vector<string> singleParse(const string & formula, const char op) {
 		int start_pos = -1;
+		int parity_count = 0;
 		vector<string> subexpressions;
 		for (int i = 0; i < static_cast<int>(formula.size()); i++) {
 			if (formula[i] == ')') {
@@ -55,68 +56,63 @@ public:
 		if (start_pos != -1) {
 			subexpressions.push_back(formula.substr(start_pos, formula.size() - start_pos));
 		}
+		if (parity_count != 0) {
+			throw runtime_error(string("Wrong parenthesis parity in the (sub)expression '") + formula + "'.");
+		}
 		return subexpressions;
 	}
 
 	// @return	true iff the formula is true under the valuation (where the valuation are pairs (variable,value)) 
 	static bool resolve(const Vals & valuation, string formula) {
 		char current_op = '|';
-		int parity_count = 0;
-		vector<string> subexpressions = singleParse(formula, current_op, parity_count);
+		// Try to divide by |
+		vector<string> subexpressions = singleParse(formula, current_op);
+		// No | on the top level
+		if (subexpressions.size() == 1) {
+			current_op = '&';
+			subexpressions = singleParse(formula, current_op);
+		}
+
+		// No valid name found
 		if (subexpressions.size() == 0) {
 			throw runtime_error(string("The subexpression ") + formula + " is not a valid formula.");
 		}
-		// No | on the top level
+		// No binary top level operator found
 		else if (subexpressions.size() == 1) {
-			current_op = '&';
-			subexpressions = singleParse(formula, current_op, parity_count);
-		}
-		if (parity_count != 0) {
-			throw runtime_error(string("Wrong parenthesis parity in the (sub)expression '") + formula + "'.");
-		}
-		// No & on the top level
-		if (subexpressions.size() == 1) {
-			bool negate = false;
-			bool result = false;
 			if (formula[0] == '!') {
-				formula = formula.substr(1);
-				negate = true;
+				return !resolve(valuation, formula.substr(1));
 			}
-			if (formula[0] == '(') {
-				result = resolve(valuation, formula.substr(1, formula.size() - 2));
+			else if (formula[0] == '(') {
+				return resolve(valuation, formula.substr(1, formula.size() - 2));
+			}
+			else if (formula == "1") {
+				return true;
+			}
+			else if (formula == "0") {
+				return false;
+			}
+			else if (valuation.count(formula) == 0) {
+				throw runtime_error(string("Variable '") + formula + "' not found in the interpretation.");
 			}
 			else {
-				if (formula == "1") {
-					result = true;
-				}
-				else if (formula == "0") {
-					result = false;
-				}
-				else if (valuation.count(formula) == 0) {
-					throw runtime_error(string("Variable '") + formula + "' not found in the interpretation.");
-				}
-				else {
-					result = valuation.at(formula);
-				}
+				return valuation.at(formula);
 			}
-			return negate ? !result : result;
-		}
-		else if (current_op == '|') {
-			bool result = false;
-			for (vector<string>::iterator it = subexpressions.begin(); it != subexpressions.end(); it++) {
-				result |= resolve(valuation, *it);
-			}
-			return result;
-		}
-		else if (current_op == '&') {
-			bool result = true;
-			for (vector<string>::iterator it = subexpressions.begin(); it != subexpressions.end(); it++) {
-				result &= resolve(valuation, *it);
-			}
-			return result;
 		}
 		else {
-			throw runtime_error (string("Unknown operator '") + current_op + "' in the (sub)expression '" + formula + "'.");
+			if (current_op == '|') {
+				bool result = false;
+				for (vector<string>::iterator it = subexpressions.begin(); it != subexpressions.end(); it++) {
+					result |= resolve(valuation, *it);
+				}
+				return result;
+			}
+			else { // The operator was set to &
+				bool result = true;
+				for (vector<string>::iterator it = subexpressions.begin(); it != subexpressions.end(); it++) {
+					result &= resolve(valuation, *it);
+				}
+				return result;
+			}
 		}
 	}
 
@@ -130,7 +126,7 @@ public:
 	// @return new string made from the source by removing whitespaces
 	static string removeWhitespaces(const string & source) {
 		string result;
-		for (int i = 0; i <  static_cast<int>(source.size()); i++) {
+		for (int i = 0; i < static_cast<int>(source.size()); i++) {
 			if (!isspace(source.at(i))) {
 				result += source.at(i);
 			}
@@ -143,7 +139,7 @@ public:
 		map<string, bool> vals;
 		vals.insert(make_pair("A", true));
 		vals.insert(make_pair("B", false));
-		MY_TEST("A",vals);
+		MY_TEST("A", vals);
 		MY_TEST("A|B", vals);
 		MY_TEST("!(A&B)", vals);
 		MY_TEST("(!B&A)", vals);
