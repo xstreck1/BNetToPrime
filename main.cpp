@@ -24,6 +24,12 @@ Minterm valuationToVals(const size_t valuation_id, map<string, bool> & valuation
 	return result;
 }
 
+// @brief	if # is present, remove everything after it
+string removeComment(const string & original) {
+	const size_t pos = original.find('#');
+	return original.substr(0, pos);
+}
+
 //
 int main(int argc, char ** argv) {
 	try {
@@ -67,7 +73,8 @@ int main(int argc, char ** argv) {
 		string line;
 		// Read computed and write line by line
 		while (getline(fin, line)) {
-            line = FormulaeResolver::removeWhitespaces(line) ;
+            line = FormulaeResolver::removeWhitespaces(line);
+			line = removeComment(line);
 			// Skip the first line, if it is "targets,factors"
             if (line.empty() || line == "targets,factors" ) {
 				continue;
@@ -75,6 +82,9 @@ int main(int argc, char ** argv) {
 			// Parse the line
 			size_t comma_pos = line.find(',');
 			string component = line.substr(0, comma_pos);
+			if (line_data.count(component)) {
+				throw runtime_error(component + " already has a function.");
+			}
 			string formula = FormulaeResolver::removeWhitespaces(line.substr(comma_pos + 1));
 			vector<string> regulators = IO::getAllRegulators(formula);
 			line_data.insert(make_pair(component, make_pair(regulators, formula)));
