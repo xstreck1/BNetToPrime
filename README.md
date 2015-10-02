@@ -18,8 +18,8 @@ The code is C++98 compliant.
 BNetToPrime [--help][--ver][input [output]] 
   --help displays help
   --ver  displays version
-  input  the path to the input file, if missing, 'input.bnet' is used
-  output the path to the output file, if missing, 'output.json' is used
+  input  the path to the input file, if missing, the standard input (console/terminal) is used
+  output the path to the output file, if missing, the standard output is used
 ```
 
 ### Input file

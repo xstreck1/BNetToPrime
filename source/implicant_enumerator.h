@@ -50,10 +50,10 @@ class ImplicantEnumerator {
 	static void nextLevel(const size_t var_count, const size_t depth, DNF & to_merge, DNF & result) {
 		// Distribute the source values into an array indexed as [position of don't cares][number of ones]
 		vector<vector<DNF> >  distribution(static_cast<int>(pow(2,var_count)), vector<DNF>(var_count - depth +1));
-		cout << "\r\t\tMerge level: " << depth + 1 << ". Analyzing " << to_merge.size() << " minterms" << endl;
+		IF_HAS_FOUT(cout << "\r\t\tMerge level: " << depth + 1 << ". Analyzing " << to_merge.size() << " minterms" << endl;)
         DNF::const_iterator to_merge_begin = to_merge.begin();
         for (DNF::const_iterator it = to_merge_begin; it != to_merge.end(); it++) {
-            cout << "\rPreprocessing: " << distance(to_merge_begin, it) << "/" << to_merge.size();
+			IF_HAS_FOUT(cout << "\rPreprocessing: " << distance(to_merge_begin, it) << "/" << to_merge.size();)
 			distribution[countDontCares(*it)][countOnes(*it)].push_back(*it);
 		}
 
@@ -62,7 +62,7 @@ class ImplicantEnumerator {
         vector<vector<DNF> >::const_iterator distribution_begin = distribution.begin();
         for (vector<vector<DNF> >::const_iterator dc_level_it = distribution.begin(); dc_level_it < distribution.end(); dc_level_it++) {
             for (vector<DNF>::const_iterator one_level_it = dc_level_it->begin(); one_level_it + 1 < dc_level_it->end(); one_level_it++) {
-                cout << "\rMerging: " << distance(distribution_begin, dc_level_it) << "/" << distribution.size();
+				IF_HAS_FOUT(cout << "\rMerging: " << distance(distribution_begin, dc_level_it) << "/" << distribution.size();)
 				vector<DNF>::const_iterator one_upper_level_it = one_level_it + 1;
                 for (DNF::const_iterator lower_minterm_it = one_level_it->begin(); lower_minterm_it < one_level_it->end(); lower_minterm_it++) {
                     for (DNF::const_iterator upper_minterm_it = one_upper_level_it->begin(); upper_minterm_it < one_upper_level_it->end(); upper_minterm_it++) {

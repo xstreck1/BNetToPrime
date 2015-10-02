@@ -8,26 +8,26 @@
 
 class IO {
 public:
-	static void printDNF(const DNF & dnf, const vector<string> & regulators, fstream & fout) {
-		fout << "[";
+	static void printDNF(const DNF & dnf, const vector<string> & regulators, ostream & out) {
+		out << "[";
 		for (DNF::const_iterator it = dnf.begin(); it != dnf.end(); it++) {
-			fout << "{";
+			out << "{";
 			if (count(it->begin(), it->end(), -1) != it->size()) {
 				for (size_t i = 0; i < regulators.size(); i++) {
 					// If there are not both the values
 					if ((*it)[i] != -1) {
 						// Write the number (ASCII position 48 for 0, 49 for 1)
-						fout << "\"" << regulators[i] << "\":" << (*it)[i] + 0 << ",";
+						out << "\"" << regulators[i] << "\":" << (*it)[i] + 0 << ",";
 					}
 				}
-				fout.seekp(fout.tellp() - static_cast<streampos>(1));
+				REMOVE_LAST
 			}
-			fout << "},";
+			out << "},";
 		}
 		if (dnf.size() != 0) {
-			fout.seekp(fout.tellp() - static_cast<streampos>(1)); // Remove the last comma
+			REMOVE_LAST
 		}
-		fout << "]";
+		out << "]";
 	}
 
 	static void printHelp() {

@@ -20,4 +20,17 @@ typedef char Value; ///< Three values - 0 for false, 1 for true, -1 for don't ca
 typedef vector<Value> Minterm; ///< A vector of values
 typedef vector<Minterm> DNF; ///< A set of minterms representing a dnf
 
+extern bool has_fin;
+extern bool has_fout;
+#define IF_HAS_FOUT(x) if (has_fout){ x } 
+#define IF_HAS_FIN(x) if (has_fin){ x } 
+
+#define REMOVE_LAST \
+	if (has_fout) { \
+		out.seekp(out.tellp() - static_cast<streampos>(1)); \
+	} \
+	else { \
+		out << "\b \b"; \
+	}
+
 #define WHOLE(Container) Container.begin(), Container.end()
