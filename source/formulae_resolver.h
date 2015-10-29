@@ -45,7 +45,7 @@ public:
 				else if (!(IO::belongsToName(formula[i]) || formula[i] == '!')) {
 					if (op == formula[i]) {
 						subexpressions.push_back(formula.substr(start_pos, i - start_pos));
-						start_pos = -1;
+						start_pos = i+1;
 					}
 					else if (formula[i] != '&' && formula[i] != '|') {
 						throw runtime_error(string("Unknown operator '") + formula[i] + "' in the (sub)expression '" + formula + "'.");
@@ -64,6 +64,9 @@ public:
 
 	// @return	true iff the formula is true under the valuation (where the valuation are pairs (variable,value)) 
 	static bool resolve(const Vals & valuation, string formula) {
+		if (formula.empty()) {
+			throw runtime_error("An empty subexpression was encountered");
+		}
 		char current_op = '|';
 		// Try to divide by |
 		vector<string> subexpressions = singleParse(formula, current_op);

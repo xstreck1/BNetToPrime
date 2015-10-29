@@ -164,7 +164,7 @@ int main(int argc, char ** argv) {
         if (!line_data.empty()) {
 			REMOVE_LAST
         }
-		out << "}" << flush;
+		out << "}" << std::endl << flush;
 #endif
 	}
 	catch (exception & e) {
